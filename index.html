@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Story Display</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+        overflow: hidden;
+      }
+      #bgVideo {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -100;
+        transform: translateX(-50%) translateY(-50%);
+      }
+
+      #book {
+        width: 70vw;
+        height: 70vh;
+        padding: 20px;
+        line-height: 1.2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      #book::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10px;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(to right, #ddd 50%, transparent 100%);
+      }
+
+      #story {
+        max-width: 100%;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <video id="bgVideo" autoplay muted loop>
+      <source src="rain.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+
+    <div id="book">
+      <div id="story"></div>
+    </div>
+    <script src="personStory.js"></script>
+    <script>
+      function cleanText(text) {
+        return text.replace(/\s+/g, " ").trim();
+      }
+
+      let currentIndex = 0;
+      function setFontSizeBasedOnWords(text) {
+        const cleanedText = cleanText(text);
+        const words = cleanedText.split(" ").length;
+        let fontSize;
+
+        if (words <= 150) {
+          fontSize = "38px";
+        } else if (words <= 250) {
+          fontSize = "32px";
+        } else if (words <= 500) {
+          fontSize = "23px";
+        } else if (words <= 700) {
+          fontSize = "19px";
+        } else if (words <= 820) {
+          fontSize = "18px";
+        } else {
+          fontSize = "16px";
+        }
+
+        console.log(`Word count: ${words}, Font size: ${fontSize}`); // Debugging line
+
+        return fontSize;
+      }
+
+      function estimateReadingTime(text) {
+        const words = text.split(/\s+/).length;
+
+        if (words <= 125) {
+          return 1.25 * 1000;
+        } else if (words <= 250) {
+          return 2 * 60 * 1000;
+        } else if (words <= 500) {
+          return 2.7 * 60 * 1000;
+        } else if (words <= 700) {
+          return 3.5 * 60 * 1000;
+        } else if (words <= 820) {
+          return 4 * 60 * 1000;
+        } else {
+          return 5 * 60 * 1000;
+        }
+      }
+
+      function startNextStory() {
+        const storyElement = document.getElementById("story");
+        storyElement.textContent = stories[currentIndex].story;
+        document.getElementById("bgVideo").play();
+
+        storyElement.style.fontSize = setFontSizeBasedOnWords(
+          stories[currentIndex].story
+        );
+
+        currentIndex++;
+
+        if (currentIndex >= stories.length) {
+          currentIndex = 0;
+        }
+
+        setTimeout(
+          startNextStory,
+          estimateReadingTime(stories[currentIndex].story)
+        );
+      }
+
+      window.onload = startNextStory;
+    </script>
+  </body>
+</html>
