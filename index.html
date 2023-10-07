@@ -102,7 +102,7 @@
         const words = text.split(/\s+/).length;
 
         if (words <= 125) {
-          return 1.25 * 1000;
+          return 1.25 * 60 * 1000;
         } else if (words <= 250) {
           return 2 * 60 * 1000;
         } else if (words <= 500) {
